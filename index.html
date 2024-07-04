@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROYECCIONES FLOR Y CAMPO</title>
+<style>
+    /* Estilos generales */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: url("imagen/colibri2.jpeg") no-repeat center center fixed;
+        background-size: cover;
+        color: #fff; /* Color del texto */
+    }
+
+    /* Fondo semi-transparente para el contenedor principal */
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: rgba(242, 242, 242, 0.2); /* Color de fondo del contenedor con opacidad */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra */
+        border-radius: 8px; /* Bordes redondeados */
+    }
+
+    /* Estilos para el formulario */
+    form {
+        background-color: rgba(224, 224, 224, 0.9); /* Color plomo claro para el formulario con opacidad */
+        padding: 20px;
+        border-radius: 8px;
+        color: #000; /* Texto negro */
+    }
+
+    form label {
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 10px;
+        vertical-align: top;
+    }
+
+    form input, form select, form button {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    form button {
+        width: auto;
+        background-color: #008080; /* Botón del color de fondo */
+        color: #fff; /* Texto del botón */
+        border: none;
+        cursor: pointer;
+    }
+
+    form button:hover {
+        background-color: #00334d; /* Color de fondo del botón al pasar el mouse */
+    }
+
+    /* Estilos para las tablas */
+    table {
+        width: 100%;
+        margin-bottom: 20px;
+        border-collapse: collapse;
+        background-color: rgba(224, 224, 224, 0.9); /* Color plomo claro para las tablas con opacidad */
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #ccc; /* Borde gris claro */
+        color: #000; /* Texto negro */
+    }
+
+    th {
+        background-color: #666; /* Color de fondo para las cabeceras */
+        color: #fff; /* Color del texto para las cabeceras */
+    }
+
+    /* Estilos para dispositivos móviles */
+    @media only screen and (max-width: 600px) {
+        .container {
+            padding: 10px;
+        }
+
+        form label, form input, form select, form button {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+<h1>Proyecciones FYC</h1>
+
+<div class="container">
+<form id="formulario">
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" required>
+    <br><br>
+    <label for="semana">Semana:</label>
+    <input type="number" id="semana" min="1" required>
+    <br><br>
+    <label for="supervisor">Supervisor:</label>
+    <select id="supervisor" onchange="actualizarBloques()">
+        <option value="MARIO PILLAJO">MARIO PILLAJO</option>
+        <option value="SEGUNDO AGUILAR">SEGUNDO AGUILAR</option>
+        <option value="PATRICIO PUMA">PATRICIO PUMA</option>
+        <option value="JHONY PEÑAFIEL">JHONY PEÑAFIEL</option>
+        <option value="MIGUEL CAIZA">MIGUEL CAIZA</option>
+        <option value="SEGUNDO BASSANTES">SEGUNDO BASSANTES</option>
+        <option value="DIEGO ANRANGO">DIEGO ANRANGO</option>
+        <option value="PEDRO PINZA">PEDRO PINZA</option>
+        <option value="HECTOR ULCUANGO">HECTOR ULCUANGO</option>
+    </select>
+    <br><br>
+    <label for="bloque">Bloque:</label>
+    <select id="bloque" onchange="actualizarVariedades()" required>
+        <!-- Los bloques se llenarán dinámicamente -->
+    </select>
+    <br><br>
+    <label for="variedad">Variedad:</label>
+    <select id="variedad" required>
+        <!-- Las variedades se llenarán dinámicamente -->
+    </select>
+    <br><br>
+    <label for="numCamas">Número de Cama Contado:</label>
+    <input type="number" id="numCamas" min="1" required>
+    <br><br>
+    <label for="numCuadros">Número de Cuadro Contado:</label>
+    <input type="number" id="numCuadros" min="1" required>
+    <br><br>
+    <label for="conteo1">R3:</label>
+    <input type="number" id="conteo1" min="0" required>
+    <br><br>
+    <label for="conteo2">R2b:</label>
+    <input type="number" id="conteo2" min="0" required>
+    <br><br>
+    <label for="conteo3">R2a:</label>
+    <input type="number" id="conteo3" min="0" required>
+    <br><br>
+    <label for="conteo4">R1:</label>
+    <input type="number" id="conteo4" min="0" required>
+    <br><br>
+    <button type="button" onclick="agregarConteo()">Agregar Conteo</button>
+  
+    <button type="button" onclick="exportarExcel()">Exportar a Excel</button>
+</form>
+</div>
+<h2>Conteos Registrados</h2>
+<table border="1" id="tablaConteos">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Semana</th>
+            <th>Supervisor</th>
+            <th>Bloque</th>
+            <th>Variedad</th>
+            <th>Cama Registrada </th>
+            <th>Cuadro Registrado</th>
+            <th>R3</th>
+            <th>R2b</th>
+            <th>R2a</th>
+            <th>R1</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Aquí se agregarán dinámicamente los conteos -->
+    </tbody>
+</table>
+
+<h2>Tabla Resumen</h2>
+<table border="1" id="tablaResumen">
+    <thead>
+        <tr>
+            <th>Bloque</th>
+            <th>Variedad</th>
+            <th>Número de Cuadro</th>
+            <th>Número de Camas</th>
+            <th>R3</th>
+            <th>R2b</th>
+            <th>R2a</th>
+            <th>R1</th>
+            <th>Promedio</th>
+            <th>Tallos Cama 1</th>
+            <th>Tallos Cama 2</th>
+            <th>Tallos Cama 3</th>
+            <th>Tallos Cama 4</th>
+            <th>Proyección 1</th>
+            <th>Proyección 2</th>
+            <th>Proyección 3</th>
+            <th>Proyección 4</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Aquí se agregarán dinámicamente los datos resumidos -->
+    </tbody>
+</table>
+
+<button type="button" onclick="limpiarInformacion()">Limpiar Información</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+<script>
+// Datos de variedades por bloque y supervisor
+const variedadesPorBloque = {
+    "HECTOR ULCUANGO": {
+        "14 A": ["V.I.PINK"],
+        "14 B": ["V.I.PINK"],
+        "14 C": ["V.I.PINK"],
+        "14 D": ["V.I.PINK"],
+        "77": ["MOMENTUM", "V.I.PINK"],
+        "78 A": ["MOMENTUM"],
+        "78 B": ["MOMENTUM"],
+        "78 C": ["MOMENTUM"],
+        "79 A": ["FULL MONTY"],
+        "79 B": ["FULL MONTY"],
+        "79 C": ["FULL MONTY"]
+    },
+    "MARIO PILLAJO": {
+        "1": ["COUNTRY CANDY", "FREE SPIRIT", "PINK X-PRESSION"],
+        "2": ["MANDARIN X-PRESSION", "PINK X-PRESSION", "SWEET MEMORY"],
+        "5": ["V.I.PINK"],
+        "6": ["PLAYA BLANCA"],
+        "7": ["FELICITY", "MONDIAL"],
+        "8": ["EXPLORER", "REDIANT"],
+        "10": ["SWEET MEMORY"],
+        "11": ["EXPLORER", "FELICITY", "REDVOLUTION"],
+        "15": ["FREEDOM"],
+        "70": ["PLAYA BLANCA"]
+    },
+    "PATRICIO PUMA": {
+        "12": ["FELICITY", "PLAYA BLANCA"],
+        "13": ["BE SWEET", "COOL DOWN", "MANDALA"],
+        "16": ["MOMENTUM", "VEGGIE"],
+        "17": ["ORANGE CRUSH"],
+        "18": ["HIGH & YELLOW MAGIC", "KAHALA", "SILANTOI"],
+        "19": ["FULL MONTY", "V.I.PINK"],
+        "20": ["FRUTETTO", "HIGH & MAGIC", "PINK FLOYD"],
+        "69": ["FREEDOM", "TABATHA"],
+        "69 A": ["MOMENTUM"],
+        "69 B": ["MOMENTUM"],
+        "71": ["ABSOLUT IN PINK", "HILUX", "RAGAZZA"]
+    },
+    "SEGUNDO AGUILAR": {
+        "3": ["FREE SPIRIT"],
+        "4": ["MOMENTUM", "PINK MONDIAL", "TROPIC VERSILIA"],
+        "9": ["COUNTRY BLUES", "COUNTRY SECRET", "SWEET MEMORY"],
+        "24": ["FREEDOM"],
+        "25": ["FRUTETTO", "LOLA", "SWEET MEMORY"],
+        "26": ["FREEDOM"],
+        "27": ["KAHALA", "MAGIC TIME", "NOVIA", "V.I.PINK"],
+        "28": ["HILUX", "SUNSET GLORY"],
+        "29": ["PLAYA BLANCA"],
+        "30": ["FREEDOM"]
+    },
+    "MIGUEL CAIZA": {
+        "21": ["STILETTO"],
+        "22": ["MOMENTUM"],
+        "23": ["DEEP PURPLE", "FRUTETTO", "PALOMA", "PINK FLOYD", "PINK X-PRESSION"],
+        "35": ["DAKAR", "FULL MONTY", "NEWS FLASH", "PLAYA BLANCA"],
+        "36": ["MIA", "MONDIAL", "ORANGE CRUSH"],
+        "37": ["HILUX", "SILANTOI"],
+        "38": ["BIKINI", "HIGH & MAGIC"],
+        "39": ["PLAYA BLANCA"],
+        "40": ["HIGH & MAGIC", "JESSIKA", "OPALA"]
+    },
+    "SEGUNDO BASSANTES": {
+        "41": ["FREEDOM"],
+        "42": ["PLAYA BLANCA"],
+        "43": ["SWEET MEMORY"],
+        "44": ["MONDIAL", "SWEET MEMORY"],
+        "45": ["FORTUNE", "FREEDOM", "HEARTS", "LADY IN RED"],
+        "46 A": ["FREEDOM", "MOMENTUM"],
+        "46 B": ["FREEDOM"],
+        "47": ["REDIANT"],
+        "48": ["SWEET UNIQUE"]
+    },
+    "DIEGO ANRANGO": {
+        "31": ["COOL WATER", "FREEDOM", "PLAYA BLANCA", "REDIANT"],
+        "32": ["EXPLORER", "FREEDOM"],
+        "33": ["FREEDOM"],
+        "34": ["FREEDOM"]
+    },
+    "JHONY PEÑAFIEL": {
+        "49": ["DEEP PURPLE", "MOODY BLUES", "PINK MONDIAL"],
+        "50": ["MOMENTUM"],
+        "51 A": ["V.I.PINK"],
+        "51 B": ["V.I.PINK"],
+        "52": ["RAGAZZA", "SWEET MEMORY", "V.I.PINK"],
+        "53": ["MONDIAL", "PINK MONDIAL"],
+        "54": ["REDIANT", "SHIMMER", "TIFFANY", "V.I.PINK"],
+        "55": ["FREEDOM"],
+        "56 A": ["FREEDOM"],
+        "56 B": ["FREEDOM"],
+        "56 C": ["FREEDOM"],
+        "56 D": ["FREEDOM"],
+        "56 E": ["FREEDOM"],
+        "56 F": ["FREEDOM"],
+        "57": ["FREEDOM"]
+    },
+    "PEDRO PINZA": {
+        "58": ["FREEDOM"],
+        "59": ["EXPLORER"],
+        "60": ["PLAYA BLANCA"],
+        "61": ["PLAYA BLANCA"],
+        "62": ["FREEDOM"],
+        "63": ["MOMENTUM", "OPALA", "SWEET MEMORY"],
+        "64": ["STILETTO"],
+        "65": ["EXPLORER", "REDVOLUTION"],
+        "66 A": ["HILUX"],
+        "66 B": ["HILUX"],
+        "66 C": ["HILUX"],
+        "67": ["PINK FLOYD"],
+        "67 A": ["V.I.PINK"],
+        "67 B": ["V.I.PINK"],
+        "67 C": ["V.I.PINK"],
+        "67 D": ["V.I.PINK"],
+        "68": ["FULL MONTY", "JESSIKA"],
+        "68 A": ["OPALA"],
+        "68 B": ["OPALA"]
+        
+        },
+        // Añadir más bloques y variedades según sea necesario
+    };
+
+    // Datos de número de cuadros y camas por bloque y variedad
+    const datosCuadrosCamas = {
+        
+    "14 A": {
+        "V.I.PINK": {"cuadros": 7.50, "camas": 38}
+    },
+    "14 B": {
+        "V.I.PINK": {"cuadros": 7.50, "camas": 30}
+    },
+    "14 C": {
+        "V.I.PINK": {"cuadros": 7.50, "camas": 63}
+    },
+    "14 D": {
+        "V.I.PINK": {"cuadros": 7.50, "camas": 35}
+    },
+    "77": {
+        "MOMENTUM": {"cuadros": 10.50, "camas": 46},
+        "V.I.PINK": {"cuadros": 10.50, "camas": 30}
+    },
+    "78 A": {
+        "MOMENTUM": {"cuadros": 5.50, "camas": 52}
+    },
+   "78 B": {
+        "MOMENTUM": {"cuadros": 5.50, "camas": 36}
+    },
+    "78 C": {
+        "MOMENTUM": {"cuadros": 5.50, "camas": 12}
+    },
+    "79 A": {
+        "FULL MONTY": {"cuadros": 4.5, "camas": 20}
+    },
+    "79 B": {
+        "FULL MONTY": {"cuadros": 4.5, "camas": 36}
+    },
+    "79 C": {
+        "FULL MONTY": {"cuadros": 4.5, "camas": 54}
+    },
+    "1": {
+        "COUNTRY CANDY": {"cuadros": 11.40, "camas": 40},
+        "FREE SPIRIT": {"cuadros": 10.47, "camas": 44},
+        "PINK X-PRESSION": {"cuadros": 9.33, "camas": 23}
+    },
+    "2": {
+        "MANDARIN X-PRESSION": {"cuadros": 11.50, "camas": 40},
+        "PINK X-PRESSION": {"cuadros": 11.50, "camas": 22},
+        "SWEET MEMORY": {"cuadros": 9.46, "camas": 24}
+    },
+    "5": {
+        "V.I.PINK": {"cuadros": 11.50, "camas": 30}
+    },
+    "6": {
+        "PLAYA BLANCA": {"cuadros": 9.75, "camas": 126}
+    },
+    "7": {
+        "FELICITY": {"cuadros": 10.00, "camas": 20},
+        "MONDIAL": {"cuadros": 10.00, "camas": 108}
+    },
+    "8": {
+        "EXPLORER": {"cuadros": 10.25, "camas": 32},
+        "REDIANT": {"cuadros": 10.25, "camas": 96}
+    },
+    "10": {
+        "SWEET MEMORY": {"cuadros": 10.96, "camas": 39}
+    },
+    "11": {
+        "EXPLORER": {"cuadros": 10.25, "camas": 20},
+        "FELICITY": {"cuadros": 10.25, "camas": 8},
+        "REDVOLUTION": {"cuadros": 10.33, "camas": 45}
+    },
+    "15": {
+        "FREEDOM": {"cuadros": 6.90, "camas": 124}
+    },
+    "70": {
+        "PLAYA BLANCA": {"cuadros": 5.60, "camas": 124}
+    },
+    "12": {
+        "FELICITY": {"cuadros": 10.50, "camas": 22},
+        "PLAYA BLANCA": {"cuadros": 10.25, "camas": 61}
+    },
+    "13": {
+        "BE SWEET": {"cuadros": 10.50, "camas": 40},
+        "COOL DOWN": {"cuadros": 10.50, "camas": 50},
+        "MANDALA": {"cuadros": 10.50, "camas": 38}
+    },
+    "3": {
+        "FREE SPIRIT": {"cuadros": 11.35, "camas": 49}
+    },
+    "4": {
+        "MOMENTUM": {"cuadros": 11.00, "camas": 52},
+        "PINK MONDIAL": {"cuadros": 11.00, "camas": 28},
+        "TROPIC VERSILIA": {"cuadros": 11.00, "camas": 52}
+    },
+    "16": {
+        "MOMENTUM": {"cuadros": 5.50, "camas": 92},
+        "VEGGIE": {"cuadros": 5.50, "camas": 1}
+    },
+    "17": {
+        "ORANGE CRUSH": {"cuadros": 7.00, "camas": 93}
+    },
+    "18": {
+        "HIGH & YELLOW MAGIC": {"cuadros": 7.00, "camas": 45},
+        "KAHALA": {"cuadros": 7.00, "camas": 22},
+        "SILANTOI": {"cuadros": 7.00, "camas": 26}
+    },
+    "19": {
+        "FULL MONTY": {"cuadros": 7.00, "camas": 45},
+        "V.I.PINK": {"cuadros": 7.00, "camas": 48}
+    },
+    "20": {
+        "FRUTETTO": {"cuadros": 7.00, "camas": 17},
+        "HIGH & MAGIC": {"cuadros": 7.00, "camas": 48},
+        "PINK FLOYD": {"cuadros": 7.00, "camas": 28}
+    },
+    "21": {
+        "STILETTO": {"cuadros": 6.50, "camas": 93}
+    },
+    "22": {
+        "MOMENTUM": {"cuadros": 6.50, "camas": 93}
+    },
+    "23": {
+        "DEEP PURPLE": {"cuadros": 6.50, "camas": 16},
+        "FRUTETTO": {"cuadros": 6.50, "camas": 4},
+        "PALOMA": {"cuadros": 6.50, "camas": 29},
+        "PINK FLOYD": {"cuadros": 6.50, "camas": 14},
+        "PINK X-PRESSION": {"cuadros": 6.50, "camas": 7}
+    },
+    "9": {
+        "COUNTRY BLUES": {"cuadros": 12.00, "camas": 40},
+        "COUNTRY SECRET": {"cuadros": 12.00, "camas": 40},
+        "SWEET MEMORY": {"cuadros": 12.00, "camas": 60}
+    },
+    "24": {
+        "FREEDOM": {"cuadros": 6.50, "camas": 93}
+    },
+    "25": {
+        "FRUTETTO": {"cuadros": 6.50, "camas": 29},
+        "LOLA": {"cuadros": 6.50, "camas": 11},
+        "SWEET MEMORY": {"cuadros": 6.50, "camas": 51}
+    },
+    "26": {
+        "FREEDOM": {"cuadros": 6.50, "camas": 93}
+    },
+    "27": {
+        "KAHALA": {"cuadros": 6.50, "camas": 9},
+        "MAGIC TIME": {"cuadros": 6.50, "camas": 15},
+        "NOVIA": {"cuadros": 6.50, "camas": 12},
+        "V.I.PINK": {"cuadros": 6.50, "camas": 45}
+    },
+    "31": {
+        "COOL WATER": {"cuadros": 4.50, "camas": 114},
+        "FREEDOM": {"cuadros": 4.50, "camas": 111},
+        "PLAYA BLANCA": {"cuadros": 4.50, "camas": 101},
+        "REDIANT": {"cuadros": 4.50, "camas": 104}
+    },
+    "32": {
+        "EXPLORER": {"cuadros": 5.00, "camas": 89},
+        "FREEDOM": {"cuadros": 5.00, "camas": 19}
+    },
+    "33": {
+        "FREEDOM": {"cuadros": 5.00, "camas": 108}
+    },
+    "34": {
+        "FREEDOM": {"cuadros": 5.00, "camas": 108}
+    },
+    "35": {
+        "DAKAR": {"cuadros": 6.50, "camas": 6},
+        "FULL MONTY": {"cuadros": 6.50, "camas": 39},
+        "NEWS FLASH": {"cuadros": 6.50, "camas": 29},
+        "PLAYA BLANCA": {"cuadros": 6.50, "camas": 23}
+    },
+    "36": {
+        "MIA": {"cuadros": 6.50, "camas": 15},
+        "MONDIAL": {"cuadros": 6.50, "camas": 34},
+        "ORANGE CRUSH": {"cuadros": 6.50, "camas": 48}
+    },
+    "37": {
+        "HILUX": {"cuadros": 6.50, "camas": 61},
+        "SILANTOI": {"cuadros": 6.50, "camas": 36}
+    },
+    "38": {
+        "BIKINI": {"cuadros": 6.50, "camas": 49},
+        "HIGH & MAGIC": {"cuadros": 6.50, "camas": 48}
+    },
+    "39": {
+        "PLAYA BLANCA": {"cuadros": 6.50, "camas": 97}
+    },
+    "40": {
+        "HIGH & MAGIC": {"cuadros": 5.50, "camas": 52},
+        "JESSIKA": {"cuadros": 5.50, "camas": 23},
+        "OPALA": {"cuadros": 5.50, "camas": 22}
+    },
+    "41": {
+        "FREEDOM": {"cuadros": 5.00, "camas": 90}
+    },
+    "42": {
+        "PLAYA BLANCA": {"cuadros": 5.00, "camas": 90}
+    },
+    "43": {
+        "SWEET MEMORY": {"cuadros": 5.00, "camas": 90}
+    },
+    "44": {
+        "MONDIAL": {"cuadros": 5.00, "camas": 45},
+        "SWEET MEMORY": {"cuadros": 5.00, "camas": 45}
+    },
+    "45": {
+        "FORTUNE": {"cuadros": 5.00, "camas": 25},
+        "FREEDOM": {"cuadros": 5.00, "camas": 30},
+        "HEARTS": {"cuadros": 5.00, "camas": 18},
+        "LADY IN RED": {"cuadros": 5.00, "camas": 17}
+    },
+    "47": {
+        "REDIANT": {"cuadros": 5.00, "camas": 90}
+    },
+    "48": {
+        "SWEET UNIQUE": {"cuadros": 5.00, "camas": 90}
+    },
+    "49": {
+        "DEEP PURPLE": {"cuadros": 5.00, "camas": 27},
+        "MOODY BLUES": {"cuadros": 5.00, "camas": 27},
+        "PINK MONDIAL": {"cuadros": 5.00, "camas": 54}
+    },
+    "50": {
+        "MOMENTUM": {"cuadros": 5.00, "camas": 108}
+    },
+    "51 A": {
+        "V.I.PINK": {"cuadros": 3.00, "camas": 14}
+    },
+    "51 B": {
+        "V.I.PINK": {"cuadros": 5.00, "camas": 93}
+    },
+    "52": {
+        "RAGAZZA": {"cuadros": 5.00, "camas": 28},
+        "SWEET MEMORY": {"cuadros": 5.00, "camas": 32},
+        "V.I.PINK": {"cuadros": 5.00, "camas": 32}
+    },
+    "53": {
+        "MONDIAL": {"cuadros": 5.00, "camas": 78},
+        "PINK MONDIAL": {"cuadros": 5.00, "camas": 29}
+    },
+    "54": {
+        "REDIANT": {"cuadros": 5.00, "camas": 36},
+        "SHIMMER": {"cuadros": 5.00, "camas": 26},
+        "TIFFANY": {"cuadros": 5.00, "camas": 24},
+        "V.I.PINK": {"cuadros": 5.00, "camas": 22}
+    },
+    "55": {
+        "FREEDOM": {"cuadros": 8.00, "camas": 65}
+    },
+    "56 A": {
+        "FREEDOM": {"cuadros": 10.00, "camas": 12}
+    },
+    "56 B": {
+        "FREEDOM": {"cuadros": 9.00, "camas": 12}
+    },
+    "56 C": {
+        "FREEDOM": {"cuadros": 8.00, "camas": 6}
+    },
+    "56 D": {
+        "FREEDOM": {"cuadros": 6.00, "camas": 6}
+    },
+    "56 E": {
+        "FREEDOM": {"cuadros": 4.00, "camas": 6}
+    },
+    "56 F": {
+        "FREEDOM": {"cuadros": 3.00, "camas": 6}
+    },
+    "57": {
+        "FREEDOM": {"cuadros": 8.00, "camas": 42}
+    },
+    "58": {
+        "FREEDOM": {"cuadros": 8.00, "camas": 57}
+    },
+    "59": {
+        "EXPLORER": {"cuadros": 5.00, "camas": 108}
+    },
+    "60": {
+        "PLAYA BLANCA": {"cuadros": 5.00, "camas": 108}
+    },
+    "61": {
+        "PLAYA BLANCA": {"cuadros": 5.00, "camas": 108}
+    },
+    "62": {
+        "FREEDOM": {"cuadros": 5.00, "camas": 108}
+    },
+    "63": {
+        "MOMENTUM": {"cuadros": 5.00, "camas": 52},
+        "OPALA": {"cuadros": 5.00, "camas": 28},
+        "SWEET MEMORY": {"cuadros": 5.00, "camas": 28}
+    },
+    "64": {
+        "STILETTO": {"cuadros": 5.00, "camas": 108}
+    },
+    "65": {
+        "EXPLORER": {"cuadros": 5.00, "camas": 70},
+        "REDVOLUTION": {"cuadros": 5.00, "camas": 38}
+    },
+    "66 A": {
+        "HILUX": {"cuadros": 6.00, "camas": 40}
+    },
+    "66 B": {
+        "HILUX": {"cuadros": 2.00, "camas": 7}
+    },
+    "66 C": {
+        "HILUX": {"cuadros": 1.00, "camas": 4}
+    },
+    "67": {
+        "PINK FLOYD": {"cuadros": 6.00, "camas": 56}
+    },
+    "67 A": {
+        "V.I.PINK": {"cuadros": 6.00, "camas": 13}
+    },
+    "67 B": {
+        "V.I.PINK": {"cuadros": 4.00, "camas": 9}
+    },
+    "67 C": {
+        "V.I.PINK": {"cuadros": 2.00, "camas": 4}
+    },
+    "67 D": {
+        "V.I.PINK": {"cuadros": 1.00, "camas": 1}
+    },
+    "68": {
+        "FULL MONTY": {"cuadros": 5.00, "camas": 56},
+        "JESSIKA": {"cuadros": 5.00, "camas": 24}
+     },
+    "68 A": {
+        "OPALA": {"cuadros": 5.00, "camas": 20}
+    },
+    "68 B": {
+        "OPALA": {"cuadros": 2.00, "camas": 7}
+    },
+    "69": {
+        "FREEDOM": {"cuadros": 7.00, "camas": 32},
+        "TABATHA": {"cuadros": 7.00, "camas": 40}
+    },
+    "69 A": {
+        "MOMENTUM": {"cuadros": 2.00, "camas": 9}
+    },
+    "69 B": {
+        "MOMENTUM": {"cuadros": 7.00, "camas": 41}
+    },
+    "71": {
+        "ABSOLUT IN PINK": {"cuadros": 6.00, "camas": 62},
+        "HILUX": {"cuadros": 6.00, "camas": 30},
+        "RAGAZZA": {"cuadros": 6.00, "camas": 32}
+    },
+    "28": {
+        "HILUX": {"cuadros": 6.50, "camas": 43},
+        "SUNSET GLORY": {"cuadros": 6.50, "camas": 50}
+    },
+    "29": {
+        "PLAYA BLANCA": {"cuadros": 6.50, "camas": 93}
+    },
+    "30": {
+        "FREEDOM": {"cuadros": 5.00, "camas": 93}
+    },
+    "46 A": {
+        "FREEDOM": {"cuadros": 5.00, "camas": 1},
+        "MOMENTUM": {"cuadros": 5.00, "camas": 5}
+    },
+    "46 B": {
+        "FREEDOM": {"cuadros": 5.00, "camas": 45},
+         
+        },
+        // Agregar más datos según sea necesario
+    
+};
+
+// Conteos registrados
+let conteos = [];
+let editando = false; // Variable para verificar si se está editando un conteo
+let indiceEditando = -1; // Índice del conteo que se está editando
+
+// Función para agregar un nuevo conteo o actualizar uno existente
+function agregarConteo() {
+    const fecha = document.getElementById("fecha").value;
+    const semana = document.getElementById("semana").value;
+    const supervisor = document.getElementById("supervisor").value;
+    const bloque = document.getElementById("bloque").value;
+    const variedad = document.getElementById("variedad").value;
+    const cama = parseFloat(document.getElementById("numCamas").value);
+    const cuadro = parseFloat(document.getElementById("numCuadros").value);
+    const conteo1 = parseFloat(document.getElementById("conteo1").value);
+    const conteo2 = parseFloat(document.getElementById("conteo2").value);
+    const conteo3 = parseFloat(document.getElementById("conteo3").value);
+    const conteo4 = parseFloat(document.getElementById("conteo4").value);
+
+    if (editando && indiceEditando !== null) {
+        // Si se está editando, actualiza el conteo existente
+        conteos[indiceEditando] = {
+            fecha,
+            semana,
+            supervisor,
+            bloque,
+            variedad,
+            cama,
+            cuadro,
+            conteo1,
+            conteo2,
+            conteo3,
+            conteo4
+        };
+        // Restaura el estado de edición
+        editando = false;
+        indiceEditando = null;
+    } else {
+        // Si no se está editando, agrega un nuevo conteo a la lista de conteos
+        conteos.push({
+            fecha,
+            semana,
+            supervisor,
+            bloque,
+            variedad,
+            cama,
+            cuadro,
+            conteo1,
+            conteo2,
+            conteo3,
+            conteo4
+        });
+    }
+
+
+
+    // Actualiza las tablas
+    actualizarTablaConteos();
+    actualizarTablaResumen();
+
+    // function limpiarCamposDesdeNumeroDeCamas del formulario
+    document.getElementById('numCamas').value = '';
+    document.getElementById('numCuadros').value = '';
+    document.getElementById('conteo1').value = '';
+    document.getElementById('conteo2').value = '';
+    document.getElementById('conteo3').value = '';
+    document.getElementById('conteo4').value = '';
+    
+
+    // Cambia el texto del botón de "Actualizar" a "Agregar"
+    document.querySelector('button[type="button"]').textContent = "Agregar Conteo";
+}
+// Función para editar una fila de la tabla de conteos
+function editarFila(index) {
+    editando = true;
+    indiceEditando = index;
+    const conteo = conteos[index];
+
+    // Rellenar el formulario con los datos del conteo seleccionado
+    document.getElementById("fecha").value = conteo.fecha;
+    document.getElementById("semana").value = conteo.semana;
+    document.getElementById("supervisor").value = conteo.supervisor;
+  actualizarBloques(); // Actualizar las variedades según el bloque seleccionado
+    document.getElementById("bloque").value = conteo.bloque;
+    actualizarVariedades(); // Actualizar las variedades según el bloque seleccionado
+    document.getElementById("variedad").value = conteo.variedad;
+    document.getElementById("numCamas").value = conteo.cama;
+    document.getElementById("numCuadros").value = conteo.cuadro;
+    document.getElementById("conteo1").value = conteo.conteo1;
+    document.getElementById("conteo2").value = conteo.conteo2;
+    document.getElementById("conteo3").value = conteo.conteo3;
+    document.getElementById("conteo4").value = conteo.conteo4;
+
+    // Cambiar el texto del botón de agregar a "Actualizar"
+    document.querySelector('button[type="button"]').textContent = "Actualizar";
+}
+
+// Función para eliminar una fila de la tabla de conteos registrados
+function eliminarFila(index) {
+    conteos.splice(index, 1);
+    actualizarTablaConteos();
+    actualizarTablaResumen();
+}
+
+// Función para limpiar toda la información registrada
+function limpiarInformacion() {
+    conteos = [];
+    actualizarTablaConteos();
+    actualizarTablaResumen();
+}
+
+// Función para actualizar la lista de bloques según el supervisor seleccionado
+function actualizarBloques() {
+    const supervisorSeleccionado = document.getElementById("supervisor").value;
+    const bloquesDisponibles = Object.keys(variedadesPorBloque[supervisorSeleccionado] || {});
+    const selectBloque = document.getElementById("bloque");
+    selectBloque.innerHTML = "";
+
+    bloquesDisponibles.forEach(bloque => {
+        const option = document.createElement("option");
+        option.value = bloque;
+        option.textContent = bloque;
+        selectBloque.appendChild(option);
+    });
+
+    // Actualizar las variedades después de actualizar los bloques
+    actualizarVariedades();
+}
+
+// Función para actualizar la lista de variedades según el supervisor y bloque seleccionados
+function actualizarVariedades() {
+    const supervisorSeleccionado = document.getElementById("supervisor").value;
+    const bloqueSeleccionado = document.getElementById("bloque").value;
+    const variedadesDisponibles = variedadesPorBloque[supervisorSeleccionado][bloqueSeleccionado];
+    const selectVariedad = document.getElementById("variedad");
+    selectVariedad.innerHTML = "";
+
+    variedadesDisponibles.forEach(variedad => {
+        const option = document.createElement("option");
+        option.value = variedad;
+        option.textContent = variedad;
+        selectVariedad.appendChild(option);
+    });
+}
+
+// Función para calcular los tallos cama
+function calcularTallosCama(cuadros, promedio) {
+    return (cuadros * promedio).toFixed(2);
+}
+
+// Función para calcular la proyección
+function calcularProyeccion(tallosCama, camas) {
+    return (tallosCama * camas).toFixed(2);
+}
+
+// Función para actualizar la tabla de conteos registrados
+function actualizarTablaConteos() {
+    const tablaConteos = document.getElementById("tablaConteos").getElementsByTagName('tbody')[0];
+    tablaConteos.innerHTML = "";
+
+    conteos.forEach((conteo, index) => {
+        const fila = tablaConteos.insertRow();
+        fila.innerHTML = `
+            <td>${conteo.fecha}</td>
+            <td>${conteo.semana}</td>
+            <td>${conteo.supervisor}</td>
+            <td>${conteo.bloque}</td>
+            <td>${conteo.variedad}</td>
+            <td>${conteo.cama}</td>
+            <td>${conteo.cuadro}</td>
+            <td>${conteo.conteo1}</td>
+            <td>${conteo.conteo2}</td>
+            <td>${conteo.conteo3}</td>
+            <td>${conteo.conteo4}</td>
+            <td>
+                <button type="button" onclick="editarFila(${index})">Editar</button>
+                <button type="button" onclick="eliminarFila(${index})">Eliminar</button>
+            </td>
+        `;
+    });
+}
+
+// Función para actualizar la tabla resumen
+function actualizarTablaResumen() {
+    const resumen = {};
+
+    conteos.forEach(conteo => {
+        const { bloque, variedad, conteo1, conteo2, conteo3, conteo4 } = conteo;
+
+        if (!resumen[bloque]) {
+            resumen[bloque] = {};
+        }
+
+        if (!resumen[bloque][variedad]) {
+            resumen[bloque][variedad] = {
+                conteo1: [],
+                conteo2: [],
+                conteo3: [],
+                conteo4: []
+            };
+        }
+
+        resumen[bloque][variedad].conteo1.push(conteo1);
+        resumen[bloque][variedad].conteo2.push(conteo2);
+        resumen[bloque][variedad].conteo3.push(conteo3);
+        resumen[bloque][variedad].conteo4.push(conteo4);
+    });
+
+    const tablaResumen = document.getElementById("tablaResumen").getElementsByTagName('tbody')[0];
+    tablaResumen.innerHTML = "";
+
+    for (const bloque in resumen) {
+        for (const variedad in resumen[bloque]) {
+            const fila = tablaResumen.insertRow();
+            const promedioConteo1 = promedioArray(resumen[bloque][variedad].conteo1);
+            const promedioConteo2 = promedioArray(resumen[bloque][variedad].conteo2);
+            const promedioConteo3 = promedioArray(resumen[bloque][variedad].conteo3);
+            const promedioConteo4 = promedioArray(resumen[bloque][variedad].conteo4);
+            fila.innerHTML = `
+                <td>${bloque}</td>
+                <td>${variedad}</td>
+                <td>${datosCuadrosCamas[bloque][variedad].cuadros}</td>
+                <td>${datosCuadrosCamas[bloque][variedad].camas}</td>
+                <td>${sumarArray(resumen[bloque][variedad].conteo1)}</td>
+                <td>${sumarArray(resumen[bloque][variedad].conteo2)}</td>
+                <td>${sumarArray(resumen[bloque][variedad].conteo3)}</td>
+                <td>${sumarArray(resumen[bloque][variedad].conteo4)}</td>
+                <td>${promedioArray(resumen[bloque][variedad].conteo1)}, ${promedioArray(resumen[bloque][variedad].conteo2)}, ${promedioArray(resumen[bloque][variedad].conteo3)}, ${promedioArray(resumen[bloque][variedad].conteo4)}</td>
+                <td>${calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo1)}</td>
+                <td>${calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo2)}</td>
+                <td>${calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo3)}</td>
+                <td>${calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo4)}</td>
+                <td>${calcularProyeccion(calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo1), datosCuadrosCamas[bloque][variedad].camas)}</td>
+                <td>${calcularProyeccion(calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo2), datosCuadrosCamas[bloque][variedad].camas)}</td>
+                <td>${calcularProyeccion(calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo3), datosCuadrosCamas[bloque][variedad].camas)}</td>
+                <td>${calcularProyeccion(calcularTallosCama(datosCuadrosCamas[bloque][variedad].cuadros, promedioConteo4), datosCuadrosCamas[bloque][variedad].camas)}</td>
+            `;
+        }
+    }
+}
+
+// Función para sumar un array de números
+function sumarArray(array) {
+    return array.reduce((total, num) => total + num, 0);
+}
+
+// Función para calcular el promedio de un array de números
+function promedioArray(array) {
+    const suma = sumarArray(array);
+    return suma / array.length || 0;
+}
+
+// Función para exportar a Excel
+function exportarExcel() {
+    const wb = XLSX.utils.book_new();
+    const wsConteos = XLSX.utils.table_to_sheet(document.getElementById("tablaConteos"));
+    const wsResumen = XLSX.utils.table_to_sheet(document.getElementById("tablaResumen"));
+
+    // Agregar títulos a las hojas de cálculo
+    wsConteos['A1'] = { v: 'Fecha', t: 's' };
+    wsConteos['B1'] = { v: 'Semana', t: 's' };
+    // Continuar agregando los títulos para las columnas de la tabla de conteos
+    wsResumen['A1'] = { v: 'Bloque', t: 's' };
+    wsResumen['B1'] = {v: 'Variedad', t: 's'};
+// Continuar agregando los títulos para las columnas de la tabla resumen
+    wsResumen['C1'] = { v: 'Cuadros', t: 's' };
+    wsResumen['D1'] = { v: 'Camas', t: 's' };
+    wsResumen['E1'] = { v: 'Conteo1', t: 's' };
+    wsResumen['F1'] = { v: 'Conteo2', t: 's' };
+    wsResumen['G1'] = { v: 'Conteo3', t: 's' };
+    wsResumen['H1'] = { v: 'Conteo4', t: 's' };
+    wsResumen['I1'] = { v: 'Promedio', t: 's' };
+    wsResumen['J1'] = { v: 'Tallos Cama (Conteo1)', t: 's' };
+    wsResumen['K1'] = { v: 'Tallos Cama (Conteo2)', t: 's' };
+    wsResumen['L1'] = { v: 'Tallos Cama (Conteo3)', t: 's' };
+    wsResumen['M1'] = { v: 'Tallos Cama (Conteo4)', t: 's' };
+    wsResumen['N1'] = { v: 'Proyección (Conteo1)', t: 's' };
+    wsResumen['O1'] = { v: 'Proyección (Conteo2)', t: 's' };
+    wsResumen['P1'] = { v: 'Proyección (Conteo3)', t: 's' };
+    wsResumen['Q1'] = { v: 'Proyección (Conteo4)', t: 's' };
+
+    // Agregar las hojas de cálculo al libro de Excel
+    XLSX.utils.book_append_sheet(wb, wsConteos, "Conteos");
+    XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
+
+    // Guardar el libro de Excel
+    XLSX.writeFile(wb, 'analisis_proyecciones.xlsx');
+}
+
+// Función para inicializar el formulario y las tablas al cargar la página
+window.onload = function() {
+    // Agregar event listeners a los elementos del formulario
+    document.getElementById("supervisor").addEventListener("change", actualizarBloques);
+    document.getElementById("bloque").addEventListener("change", actualizarVariedades);
+    document.getElementById("agregarConteo").addEventListener("click", agregarConteo);
+    document.getElementById("limpiarInformacion").addEventListener("click", limpiarInformacion);
+    document.getElementById("exportarExcel").addEventListener("click", exportarExcel);
+
+    // Actualizar la lista de supervisores al cargar la página
+    actualizarSupervisores();
+    // Actualizar la tabla de conteos al cargar la página
+    actualizarTablaConteos();
+    // Actualizar la tabla resumen al cargar la página
+    actualizarTablaResumen();
+}
+
+// Función para actualizar la lista de supervisores
+function actualizarSupervisores() {
+    const supervisores = Object.keys(variedadesPorBloque);
+    const selectSupervisor = document.getElementById("supervisor");
+    selectSupervisor.innerHTML = "";
+
+    supervisores.forEach(supervisor => {
+        const option = document.createElement("option");
+        option.value = supervisor;
+        option.textContent = supervisor;
+        selectSupervisor.appendChild(option);
+    });
+
+    // Actualizar los bloques y variedades después de actualizar los supervisores
+    actualizarBloques();
+
+}
+
+    function exportarExcel() {
+    const wb = XLSX.utils.book_new();
+    const wsConteos = XLSX.utils.table_to_sheet(document.getElementById("tablaConteos"));
+    const wsResumen = XLSX.utils.table_to_sheet(document.getElementById("tablaResumen"));
+
+    // Agregar títulos a las hojas de cálculo
+    wsConteos['A1'] = { v: 'Fecha', t: 's' };
+    wsConteos['B1'] = { v: 'Semana', t: 's' };
+    // Continuar agregando los títulos para las columnas de la tabla de conteos
+    wsResumen['A1'] = { v: 'Bloque', t: 's' };
+    wsResumen['B1'] = { v: 'Variedad', t: 's' };
+    // Continuar agregando los títulos para las columnas de la tabla resumen
+
+    // Agregar las hojas de cálculo al libro de trabajo
+    XLSX.utils.book_append_sheet(wb, wsConteos, "Conteos");
+    XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
+
+    XLSX.writeFile(wb, "registros.xlsx");
+}
+
+    // Llenar los bloques al cargar la página
+    actualizarBloques();
+</script>
+</body>
+</html>
